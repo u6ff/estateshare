@@ -1,10 +1,27 @@
+// Lab concept: Context provider at the root + NativeWind global styles + a light theme from tokens.
+import '@/global.css';
+
 import { useFonts } from 'expo-font';
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { EstateProvider } from '@/src/features/estates/EstateContext';
+import { colors } from '@/src/theme/tokens';
+
+// Always light: the app's screens are designed for the light background token.
+const LightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: colors.primary,
+    background: colors.background,
+    card: colors.surface,
+    text: colors.text,
+    border: colors.border,
+  },
+};
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -43,14 +60,21 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+    <ThemeProvider value={LightTheme}>
+      {/* Lab concept: Context — EstateProvider makes estates/heirs available to every route. */}
+      <EstateProvider>
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.primary,
+            headerTitleStyle: { color: colors.text, fontWeight: '600' },
+            contentStyle: { backgroundColor: colors.background },
+          }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      </EstateProvider>
     </ThemeProvider>
   );
 }
