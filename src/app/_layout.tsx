@@ -1,18 +1,29 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+// Root layout. Lab 02: a Stack navigator wrapped in the Context provider,
+// so every screen shares the same estate data. Light theme on purpose.
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { EstateProvider } from '@/features/estates/EstateContext';
+import { colors } from '@/theme/tokens';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <EstateProvider>
+      <StatusBar style="dark" />
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.primary,
+          headerTitleStyle: { color: colors.text, fontWeight: '700' },
+          headerShadowVisible: false,
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="estate/new" options={{ title: 'New estate', presentation: 'modal' }} />
+        <Stack.Screen name="estate/[id]/index" options={{ title: 'Estate' }} />
+        <Stack.Screen name="estate/[id]/shares" options={{ title: 'Proposed shares' }} />
+        <Stack.Screen name="estate/[id]/report" options={{ title: 'Estate report' }} />
+      </Stack>
+    </EstateProvider>
   );
 }
